@@ -351,10 +351,51 @@ docker rm -f rancher-mgmt
 ## 8. Co dál (nedokončené / rozšíření)
 
 - **OpenShift**: dodat **OKD** / OpenShift Local (CRC) — single-node, náročné na RAM (~9 GB).
+  Mapování pojmů Rancher/k3s ↔ OpenShift je v §9.
 - **Longhorn / Ceph**: replikovaný persistent storage místo local-path.
 - **VMware/KVM vrstva**: reálná varianta na Proxmox / Harvester.
 - **CI část**: doplnit k GitOps (ArgoCD = CD) i CI pipeline (GitLab CI / GitHub Actions / Jenkins).
 - **Alerting**: Alertmanager + pravidla nad Prometheem.
+
+---
+
+## 9. OpenShift vs. Rancher / k3s (mapování pojmů)
+
+Toto řešení staví na **Rancher + k3s** (ne OpenShift). Obojí řeší stejný problém — enterprise
+Kubernetes platforma s multi-cluster správou, RBAC a GitOps — liší se ale filozofií: **OpenShift je
+„batteries included / opinionated"** (registry, monitoring, GitOps, pipelines, router i OAuth jsou
+součástí produktu a bezpečnost je přísnější), zatímco **Rancher + k3s je lehčí a modulární** (komponenty
+si přidáváš sám, viz tento lab). Níže je mapování, co v labu odpovídá čemu v OpenShiftu.
+
+| Oblast | Tento lab (Rancher + k3s) | OpenShift (OKD / OCP) |
+|---|---|---|
+| Distribuce K8s | k3s / RKE2 | OpenShift (K8s + integrované doplňky) |
+| CLI | `kubectl` | `oc` (nadmnožina `kubectl`) |
+| Multi-cluster správa | Rancher | RHACM (Advanced Cluster Management) |
+| Seskupení namespace + RBAC | Rancher **Projects** | OpenShift **Projects** (namespace + anotace) |
+| Vystavení služby | ingress-nginx + **Ingress** | **Route** (CRD, HAProxy router) |
+| Pod security | **PSA** (Pod Security Admission) | **SCC** (Security Context Constraints) |
+| GitOps / CD | **ArgoCD** (nasazený ručně) | **OpenShift GitOps** (= ArgoCD jako operátor) |
+| CI / pipelines | GitLab CI / GH Actions (externě) | **OpenShift Pipelines** (= Tekton) |
+| Image registry | externí (docker.io…) | **integrovaný** interní registry |
+| Rozšíření / operátory | Helm / Rancher Apps | **OperatorHub** + OLM |
+| Observabilita | Prometheus + Grafana (ručně) | **vestavěný** monitoring stack |
+| Build v clusteru | — | **BuildConfig / Source-to-Image (S2I)** |
+| Auth / SSO | Rancher (local / LDAP / OIDC) | vestavěný **OAuth server** + identity providers |
+
+**Rozdíly, které je dobré umět vysvětlit:**
+- **Route vs Ingress** — Route je starší OpenShift CRD s TLS terminací (edge / passthrough / reencrypt);
+  moderní OpenShift umí i standardní Ingress.
+- **SCC vs PSA** — OpenShift v defaultu (`restricted` SCC) **blokuje běh kontejnerů jako root**, takže
+  řada obrazů z Docker Hubu tam bez úprav „nejede"; k8s má novější, volnější PSA.
+- **`oc` vs `kubectl`** — `oc` je `kubectl` + navíc `oc new-project`, `oc new-app`, `oc login`, S2I…
+- **Operátorový model** — OpenShift stojí na operátorech (OLM/OperatorHub); v Rancheru/k3s přidáváš
+  komponenty přes Helm / Fleet.
+
+**Proč lab používá Rancher/k3s:** free varianta OpenShiftu (OKD / OpenShift Local / CRC) je jednouzlová
+a náročná na RAM (~9 GB), takže by na 16 GB stroji nešel postavit HA příběh se 3 control-plane + staging
++ prod. Koncepty (projekty, RBAC, GitOps, Route/Ingress, monitoring) jsou ale **přenositelné** — proto
+mapování výše.
 
 ---
 
