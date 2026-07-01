@@ -1,0 +1,23 @@
+mirrors:
+  "docker.io":
+    endpoint:
+      - "https://registry-1.docker.io"
+configs:
+  "registry-1.docker.io":
+    tls:
+      insecure_skip_verify: true
+  "docker.io":
+    tls:
+      insecure_skip_verify: true
+  "quay.io":
+    tls:
+      insecure_skip_verify: true
+  "ghcr.io":
+    tls:
+      insecure_skip_verify: true
+  "registry.k8s.io":
+    tls:
+      insecure_skip_verify: true
+  "gcr.io":
+    tls:
+      insecure_skip_verify: true

@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: cluster-prod
+  namespace: argocd
+  labels:
+    argocd.argoproj.io/secret-type: cluster
+stringData:
+  name: prod
+  server: https://172.18.0.8:6443
+  # POZOR: bearerToken je cluster-admin SA token ciloveho clusteru — nikdy necommitovat realny!
+  # Ziskej: kubectl -n kube-system get secret argocd-manager-token -o jsonpath='{.data.token}' | base64 -d
+  config: |
+    {"bearerToken":"<PROD_CLUSTER_ADMIN_SA_TOKEN>","tlsClientConfig":{"insecure":true}}

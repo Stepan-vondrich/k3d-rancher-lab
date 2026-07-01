@@ -1,0 +1,60 @@
+---
+- name: Nasazeni aplikace do k3d stagingu pres Ansible (kubernetes.core)
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  vars:
+    ns: ansible-demo
+  tasks:
+    - name: Vytvorit namespace
+      kubernetes.core.k8s:
+        state: present
+        definition:
+          apiVersion: v1
+          kind: Namespace
+          metadata:
+            name: "{{ ns }}"
+            labels:
+              managedby: ansible
+
+    - name: Nasadit nginx deployment
+      kubernetes.core.k8s:
+        state: present
+        definition:
+          apiVersion: apps/v1
+          kind: Deployment
+          metadata:
+            name: ansible-web
+            namespace: "{{ ns }}"
+            labels:
+              app: ansible-web
+              managedby: ansible
+          spec:
+            replicas: 2
+            selector:
+              matchLabels:
+                app: ansible-web
+            template:
+              metadata:
+                labels:
+                  app: ansible-web
+              spec:
+                containers:
+                  - name: web
+                    image: nginx:alpine
+                    ports:
+                      - containerPort: 80
+
+    - name: Pockat az je deployment dostupny
+      kubernetes.core.k8s_info:
+        kind: Deployment
+        namespace: "{{ ns }}"
+        name: ansible-web
+      register: dep
+      until: (dep.resources[0].status.availableReplicas | default(0)) == 2
+      retries: 30
+      delay: 10
+
+    - name: Vypsat vysledek
+      ansible.builtin.debug:
+        msg: "Deployment ansible-web ma {{ dep.resources[0].status.availableReplicas }} dostupnych replik v ns {{ ns }}"

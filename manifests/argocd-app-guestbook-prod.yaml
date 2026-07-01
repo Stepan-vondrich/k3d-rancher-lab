@@ -1,0 +1,20 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: guestbook-prod
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/argoproj/argocd-example-apps.git
+    path: guestbook
+    # PROMOTION: napevno pripnuto na revizi overenou ve stagingu
+    targetRevision: 8088f4c0d970abb09e250248cc97e35623447cb5
+  destination:
+    # cil = PROD cluster (registrovany v ArgoCD)
+    server: https://172.18.0.8:6443
+    namespace: guestbook
+  syncPolicy:
+    # zadny automated sync -> promotion je vedomy manualni krok
+    syncOptions:
+      - CreateNamespace=true
