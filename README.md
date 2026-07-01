@@ -5,9 +5,8 @@ kontejnerové platformy**: dvě HA Kubernetes prostředí (staging + produkce), 
 **Rancher**, GitOps přes **ArgoCD** (včetně multi-cluster promotion staging → prod), Infrastructure
 as Code (**Terraform** + **Ansible**) a observabilitu (**Prometheus + Grafana + kube-state-metrics**).
 
-Slouží jako podklad k pohovoru na DevOps / Platform Engineer pozici — pokrývá Kubernetes, Docker,
-Rancher/OpenShift-like správu, RBAC, CI/CD (ArgoCD), IaC, Ansible, observabilitu, REST API i reálný
-troubleshooting.
+Pokrývá Kubernetes, Docker, Rancher/OpenShift-like správu, RBAC, CI/CD (ArgoCD), IaC (Terraform +
+Ansible), observabilitu (Prometheus/Grafana), REST API i reálný troubleshooting.
 
 ---
 
@@ -220,7 +219,7 @@ docker run --rm --network k3d-staging -v "<ansible>:/work" -e K8S_AUTH_KUBECONFI
 
 ## 6. Gotchas — s čím jsem se musel vypořádat
 
-Tohle je nejcennější část pro pohovor — reálné problémy a jak je vyřešit.
+Reálné problémy, které při stavbě labu nastaly, a jak je vyřešit.
 
 ### 6.1 k3d HA cluster nepřežije `wsl --shutdown`
 **Problém:** po restartu WSL2 dostaly k3d kontejnery nové IP adresy, ale etcd má v member listu
