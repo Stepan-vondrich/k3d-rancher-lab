@@ -1,3 +1,5 @@
 Start-Lab.exe
 *.exe
 node_modules/
+CREDENTIALS.local.md
+*.local.md
