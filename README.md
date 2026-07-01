@@ -27,6 +27,28 @@ Ansible), observabilitu (Prometheus/Grafana), REST API i reálný troubleshootin
 
 ---
 
+## Rychlý start (launcher)
+
+Celý lab se spustí jedním launcherem **`Start-Lab.exe`** (zdroj: [`tools/StartLab.cs`](tools/StartLab.cs),
+kompilace přes vestavěný `csc.exe` — bez externích závislostí). Launcher:
+
+1. nastartuje **Docker Desktop** (pokud neběží) a počká na daemon,
+2. spustí **k3d clustery** `staging` + `prod` a **Rancher** kontejner,
+3. zvedne **port-forwardy** pro ArgoCD a Grafanu (s auto-restartem),
+4. otevře v prohlížeči všechna 3 UI.
+
+| UI | URL |
+|---|---|
+| Rancher | https://localhost:8443 |
+| ArgoCD | https://localhost:8090 |
+| Grafana | http://localhost:3001 |
+
+Kompilace: `csc /out:Start-Lab.exe tools\StartLab.cs` (reference `System.dll`, `System.Core.dll`,
+`System.Management.dll`). Okno launcheru nechte otevřené — drží port-forwardy (Rancher běží nezávisle
+na portu 8443).
+
+---
+
 ## 1. Zadání a mapování
 
 Původní zadání (privátní virtualizace): *3 compute nody, storage, 2 switche, virtuální Kubernetes

@@ -1,1 +1,3 @@
-# lab-only, nic k ignorovani zatim
+Start-Lab.exe
+*.exe
+node_modules/
