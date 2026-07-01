@@ -11,6 +11,23 @@ troubleshooting.
 
 ---
 
+## Náhledy (běžící lab)
+
+**Rancher** — 3 clustery pod centrální správou (`local` + HA `staging` + HA `prod`), všechny **Active**:
+
+![Rancher clusters](docs/rancher-clusters.png)
+
+**ArgoCD** — GitOps napříč clustery: `guestbook` (staging, sleduje `HEAD`) a `guestbook-prod`
+(prod, **napevno připnutá revize = řízené promotion**), obě **Synced / Healthy**:
+
+![ArgoCD applications](docs/argocd-apps.png)
+
+**Grafana** — dashboard „Kubernetes – Lab Overview" nad Prometheem + kube-state-metrics (prod):
+
+![Grafana dashboard](docs/grafana-dashboard.png)
+
+---
+
 ## 1. Zadání a mapování
 
 Původní zadání (privátní virtualizace): *3 compute nody, storage, 2 switche, virtuální Kubernetes
